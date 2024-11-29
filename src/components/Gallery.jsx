@@ -1,10 +1,25 @@
 import React from "react";
 import { useImages } from "../context/ImageContext";
+import ImageGrid from "./ImageGrid";
 
 const Gallery = () => {
   const { images } = useImages();
 
-  console.log('Gallery Images: ', images);
+  console.log("Gallery Images: ", images);
+
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return 'Date unavailable';
+    }
+  };
 
   if (images.length === 0) {
     return (
@@ -17,41 +32,19 @@ const Gallery = () => {
   }
 
   return (
-    <div className="max-h-[60vh] overflow-y-auto scrollbar-hide w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="relative group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <img 
-              src={URL.createObjectURL(image.file)}
-              alt={`Uploaded ${index + 1}`}
-              className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <p className="text-white text-sm">
-                  {image.file.name}
-                </p>
-                <p className="text-white/70 text-xs">
-                {(image.file.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <style jsx>{`
-        .scrollbar-hide {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;     /* Firefox */
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;             /* Chrome, Safari and Opera */
-        }
-      `}</style>
+    <div className="max-h-[60vh] overflow-y-auto hide-scrollbar w-full">
+      <ImageGrid images={images} formatDate={formatDate} />
+      <style>
+        {`
+          .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+        `}
+      </style>
     </div>
   );
 };
